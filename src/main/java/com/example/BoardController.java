@@ -1,0 +1,81 @@
+package com.example;
+
+import com.example.board.dao.BoardDAO;
+import com.example.board.model.BoardVO;
+import com.example.board.service.BoardService;
+import com.example.board.service.BoardServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+
+@Controller
+@RequestMapping(value = "/board")
+public class BoardController {
+    @Autowired
+    BoardServiceImpl boardService;
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String boardlist(Model model){
+        model.addAttribute("list",boardService.getBoardList());
+        return "board/list";
+    }
+
+    @RequestMapping(value ="/posts/{id}", method = RequestMethod.GET)
+    public String boardPosts(@PathVariable("id") int id, Model model){
+        BoardVO boardVO = boardService.getBoard(id);
+        model.addAttribute("posts",boardVO);
+        System.out.println(boardVO.getCatOld());
+        return "board/posts";
+    }
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    public String addPost(){
+        return "board/addform";
+    }
+
+    @RequestMapping(value = "/addok", method = RequestMethod.POST)
+    public String addPostOk(BoardVO vo){
+        if(boardService.insertBoard(vo) == 0){
+            System.out.println("데이터 추가 실패");
+        }
+        else{
+            System.out.println("데이터 추가 성공!!!");
+        }
+        return "redirect:../board/list";
+    }
+
+    @RequestMapping(value = "/editform/{id}", method = RequestMethod.GET)
+    public String editPost(Model model,@PathVariable("id") int id){
+//        BoardVO boardVO = boardService.getBoard(id);
+//        model.addAttribute("u",boardVO);
+        model.addAttribute("u",boardService.getBoard(id));
+
+        return "board/editform";
+    }
+
+    @RequestMapping(value = "/editok", method = RequestMethod.POST)
+    public String editPostOk(BoardVO vo){
+        if(boardService.updateBoard(vo) == 0){
+            System.out.println("데이터 수정 실패");
+        }
+        else{
+            System.out.println("데이터 수정 성공!!");
+        }
+        return "redirect:../board/list";
+    }
+
+    @RequestMapping(value = "/desktop/{id}", method=RequestMethod.GET)
+    public String deletePostOk(@PathVariable("id") int id){
+        if(boardService.deleteBoard(id) == 0){
+            System.out.println(("데이터 삭제 실패"));
+        }
+        else{
+            System.out.println("데이터 삭제 성공!!");
+        }
+        return "redirect:../list";
+    }
+}
