@@ -18,29 +18,29 @@ public class LoginController {
         return "login";
     }
 
-    // 로그인 하는 부분
+    // Login
     @RequestMapping(value = "/loginOk", method = RequestMethod.POST)
     public String loginCheck(HttpSession session, UserVO vo){
-        System.out.println("~로그인 시도~ try to login");
+        System.out.println("로그인 시도");
         String returnURL = "";
         if (session.getAttribute("login") != null) {
             session.removeAttribute("login");
-            System.out.println("로그인 정보 입력받음");
+            System.out.println("로그인 정보 입력");
         }
 
         UserVO loginvo = service.getUser(vo);
         if(loginvo != null){
-            System.out.println("로그인 성공 login success");
+            System.out.println("로그인 성공");
             session.setAttribute("login", loginvo);
             returnURL = "redirect:/board/list";
         } else {
-            System.out.println("로그인 실패! login failed");
+            System.out.println("로그인 실패!");
             returnURL = "redirect:/login/login";
         }
         return returnURL;
     }
 
-    // 로그아웃 하는 부분
+    // Log out
     @RequestMapping(value = "/logout")
     public String logout(HttpSession session){
         session.invalidate();
